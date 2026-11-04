@@ -97,14 +97,26 @@ class Game3DRenderer(
   private var landingTimer = 0f
   private var wasInAir = false
 
-  // Câmera Cinematográfica
+  // Modos de Câmera (Isométrica Roguelite Wizard of Legend 2, Sobre o Ombro e Cinemática)
+  enum class CameraMode(val label: String) {
+    ISOMETRIC("Isométrica"),
+    OVER_THE_SHOULDER("3ª Pessoa"),
+    CINEMATIC("Cinematográfica")
+  }
+
+  var cameraMode: CameraMode = CameraMode.ISOMETRIC
   var cameraYaw = 0f
-  var cameraPitch = 14f
-  var cameraDistance = 4.2f
+  var cameraPitch = 38f
+  var cameraDistance = 7.0f
   var isCinematicMode = false
+    get() = cameraMode == CameraMode.CINEMATIC
+    set(value) {
+      field = value
+      if (value) cameraMode = CameraMode.CINEMATIC
+    }
   private var smoothCamX = 0f
-  private var smoothCamY = 2f
-  private var smoothCamZ = 4.2f
+  private var smoothCamY = 5f
+  private var smoothCamZ = 6f
   private var cinematicTimer = 0f
 
   // Entrada de Movimento Virtual (do analógico)
@@ -470,47 +482,74 @@ class Game3DRenderer(
     val targetY: Float
     val targetZ: Float
 
-    if (isCinematicMode) {
-      cinematicTimer += 0.015f
-      targetX = playerX
-      targetY = playerY + 1.5f
-      targetZ = playerZ
+    when (cameraMode) {
+      CameraMode.CINEMATIC -> {
+        cinematicTimer += 0.015f
+        targetX = playerX
+        targetY = playerY + 1.5f
+        targetZ = playerZ
 
-      val dist = 5.5f
-      val eyeX = playerX + cos(cinematicTimer) * dist
-      val eyeY = playerY + 2.4f + sin(cinematicTimer * 0.5f) * 0.8f
-      val eyeZ = playerZ + sin(cinematicTimer) * dist
+        val dist = 5.5f
+        val eyeX = playerX + cos(cinematicTimer) * dist
+        val eyeY = playerY + 2.4f + sin(cinematicTimer * 0.5f) * 0.8f
+        val eyeZ = playerZ + sin(cinematicTimer) * dist
 
-      Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0f, 1f, 0f)
-      return
+        Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, targetX, targetY, targetZ, 0f, 1f, 0f)
+        return
+      }
+      CameraMode.ISOMETRIC -> {
+        // Câmera Isométrica Roguelite (estilo Wizard of Legend 2)
+        // Ângulo elevado com projeção suave de perspectiva
+        val isoPitch = 42f
+        val isoDist = 7.5f
+        val radYaw = Math.toRadians(cameraYaw.toDouble()).toFloat()
+        val radPitch = Math.toRadians(isoPitch.toDouble()).toFloat()
+
+        targetX = playerX
+        targetY = playerY + 0.9f
+        targetZ = playerZ - 0.8f // Pequeno avanço para visão de combate frontal
+
+        val idealCamX = targetX + sin(radYaw) * cos(radPitch) * isoDist
+        val idealCamY = targetY + sin(radPitch) * isoDist
+        val idealCamZ = targetZ + cos(radYaw) * cos(radPitch) * isoDist
+
+        smoothCamX += (idealCamX - smoothCamX) * 0.18f
+        smoothCamY += (idealCamY - smoothCamY) * 0.18f
+        smoothCamZ += (idealCamZ - smoothCamZ) * 0.18f
+
+        Matrix.setLookAtM(viewMatrix, 0, smoothCamX, smoothCamY, smoothCamZ, targetX, targetY, targetZ, 0f, 1f, 0f)
+        return
+      }
+      CameraMode.OVER_THE_SHOULDER -> {
+        // Câmera sobre o ombro (Over-The-Shoulder em 3ª pessoa)
+        val radYaw = Math.toRadians(cameraYaw.toDouble()).toFloat()
+        val radPitch = Math.toRadians(cameraPitch.toDouble()).toFloat()
+
+        val cosP = cos(radPitch)
+        val sinP = sin(radPitch)
+        val cosY = cos(radYaw)
+        val sinY = sin(radYaw)
+
+        val shoulderOffsetX = 0.55f * cosY
+        val shoulderOffsetZ = -0.55f * sinY
+
+        targetX = playerX + shoulderOffsetX
+        targetY = playerY + 1.45f
+        targetZ = playerZ + shoulderOffsetZ
+
+        val idealCamX = targetX + sinY * cosP * cameraDistance
+        val idealCamY = targetY + sinP * cameraDistance
+        val idealCamZ = targetZ + cosY * cosP * cameraDistance
+
+        // Amortecimento suave
+        smoothCamX += (idealCamX - smoothCamX) * 0.22f
+        smoothCamY += (idealCamY - smoothCamY) * 0.22f
+        smoothCamZ += (idealCamZ - smoothCamZ) * 0.22f
+
+        Matrix.setLookAtM(viewMatrix, 0, smoothCamX, smoothCamY, smoothCamZ, targetX, targetY, targetZ, 0f, 1f, 0f)
+        return
+      }
     }
-
-    // Câmera sobre o ombro (Over-The-Shoulder)
-    val radYaw = Math.toRadians(cameraYaw.toDouble()).toFloat()
-    val radPitch = Math.toRadians(cameraPitch.toDouble()).toFloat()
-
-    val cosP = cos(radPitch)
-    val sinP = sin(radPitch)
-    val cosY = cos(radYaw)
-    val sinY = sin(radYaw)
-
-    val shoulderOffsetX = 0.55f * cosY
-    val shoulderOffsetZ = -0.55f * sinY
-
-    targetX = playerX + shoulderOffsetX
-    targetY = playerY + 1.45f
-    targetZ = playerZ + shoulderOffsetZ
-
-    val idealCamX = targetX + sinY * cosP * cameraDistance
-    val idealCamY = targetY + sinP * cameraDistance
-    val idealCamZ = targetZ + cosY * cosP * cameraDistance
-
-    // Amortecimento suave
-    smoothCamX += (idealCamX - smoothCamX) * 0.22f
-    smoothCamY += (idealCamY - smoothCamY) * 0.22f
-    smoothCamZ += (idealCamZ - smoothCamZ) * 0.22f
-
-    Matrix.setLookAtM(viewMatrix, 0, smoothCamX, smoothCamY, smoothCamZ, targetX, targetY, targetZ, 0f, 1f, 0f)
   }
 
   // --- RENDERIZAÇÃO DE CENÁRIOS E MODELOS ---

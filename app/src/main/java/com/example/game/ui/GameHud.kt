@@ -90,8 +90,9 @@ fun GameHud(
   distanceToAltar: Float,
   hasReachedAltar: Boolean,
   magicCooldownLeft: Float,
-  magicCooldownTotal: Float,
-  isCinematicMode: Boolean,
+  magicCooldownTotal: Float = 3.5f,
+  isCinematicMode: Boolean = false,
+  cameraModeLabel: String = "Isométrica",
   onMoveInput: (Float, Float, Boolean) -> Unit,
   onAttack: () -> Unit,
   onDodge: () -> Unit,
@@ -122,7 +123,7 @@ fun GameHud(
 
     // 3. Botões de Ferramentas e Godot Hub (Canto Superior Direito)
     TopActionButtons(
-      isCinematicMode = isCinematicMode,
+      cameraModeLabel = cameraModeLabel,
       onToggleCamera = onToggleCamera,
       onOpenGodotHub = onOpenGodotHub,
       modifier = Modifier
@@ -314,7 +315,7 @@ private fun ObjectiveBanner(
 
 @Composable
 private fun TopActionButtons(
-  isCinematicMode: Boolean,
+  cameraModeLabel: String,
   onToggleCamera: () -> Unit,
   onOpenGodotHub: () -> Unit,
   modifier: Modifier = Modifier
@@ -324,7 +325,7 @@ private fun TopActionButtons(
     FilledTonalButton(
       onClick = onToggleCamera,
       colors = ButtonDefaults.filledTonalButtonColors(
-        containerColor = if (isCinematicMode) ArcaneBlue else DarkSurface.copy(alpha = 0.85f)
+        containerColor = if (cameraModeLabel != "3ª Pessoa") ArcaneBlue else DarkSurface.copy(alpha = 0.85f)
       ),
       shape = RoundedCornerShape(12.dp),
       modifier = Modifier
@@ -334,13 +335,14 @@ private fun TopActionButtons(
       Icon(
         Icons.Default.Videocam,
         contentDescription = "Câmera",
-        tint = if (isCinematicMode) Color.White else ArcaneCyan,
+        tint = if (cameraModeLabel != "3ª Pessoa") Color.White else ArcaneCyan,
         modifier = Modifier.size(18.dp)
       )
       Spacer(modifier = Modifier.width(6.dp))
       Text(
-        text = if (isCinematicMode) "Cinematográfica" else "Sobre Ombro",
+        text = "Câmera: $cameraModeLabel",
         fontSize = 11.sp,
+        fontWeight = FontWeight.SemiBold,
         color = Color.White
       )
     }

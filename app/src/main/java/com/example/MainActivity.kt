@@ -101,7 +101,7 @@ fun GameScreen(
   var hasReachedAltar by remember { mutableStateOf(false) }
   var cooldownLeft by remember { mutableFloatStateOf(0f) }
   var cooldownTotal by remember { mutableFloatStateOf(3.5f) }
-  var isCinematicMode by remember { mutableStateOf(false) }
+  var currentCameraMode by remember { mutableStateOf(Game3DRenderer.CameraMode.ISOMETRIC) }
   var showGodotHub by remember { mutableStateOf(false) }
 
   DisposableEffect(renderer) {
@@ -142,7 +142,8 @@ fun GameScreen(
       hasReachedAltar = hasReachedAltar,
       magicCooldownLeft = cooldownLeft,
       magicCooldownTotal = cooldownTotal,
-      isCinematicMode = isCinematicMode,
+      isCinematicMode = currentCameraMode == Game3DRenderer.CameraMode.CINEMATIC,
+      cameraModeLabel = currentCameraMode.label,
       onMoveInput = { x, z, run ->
         renderer.inputMoveX = x
         renderer.inputMoveZ = z
@@ -153,8 +154,12 @@ fun GameScreen(
       onJump = { renderer.executeJump() },
       onMagic = { renderer.executeMagicAbility() },
       onToggleCamera = {
-        isCinematicMode = !isCinematicMode
-        renderer.isCinematicMode = isCinematicMode
+        currentCameraMode = when (currentCameraMode) {
+          Game3DRenderer.CameraMode.ISOMETRIC -> Game3DRenderer.CameraMode.OVER_THE_SHOULDER
+          Game3DRenderer.CameraMode.OVER_THE_SHOULDER -> Game3DRenderer.CameraMode.CINEMATIC
+          Game3DRenderer.CameraMode.CINEMATIC -> Game3DRenderer.CameraMode.ISOMETRIC
+        }
+        renderer.cameraMode = currentCameraMode
       },
       onOpenGodotHub = { showGodotHub = true }
     )

@@ -1,0 +1,66 @@
+[gd_scene load_steps=9 format=3 uid="uid://bql7x1p8u4m3k"]
+
+[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
+[ext_resource type="Script" path="res://scripts/player/character_stats.gd" id="2_stats"]
+[ext_resource type="Script" path="res://scripts/player/player_state_machine.gd" id="3_fsm"]
+[ext_resource type="Script" path="res://scripts/magic/magic_ability.gd" id="4_magic"]
+[ext_resource type="PackedScene" path="res://scenes/magic/arcane_burst.tscn" id="5_burst"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.45
+height = 1.85
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_torso"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_player"]
+albedo_color = Color(0.12, 0.16, 0.25, 1)
+metallic = 0.35
+roughness = 0.45
+rim_enabled = true
+rim = 0.45
+rim_tint = 0.75
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("mesh_root", "stats", "state_machine", "magic_ability", "ground_ray")]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_controller")
+mesh_root = NodePath("MeshRoot")
+stats = NodePath("CharacterStats")
+state_machine = NodePath("PlayerStateMachine")
+magic_ability = NodePath("MagicAbility")
+ground_ray = NodePath("GroundRay")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.925, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="MeshRoot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.925, 0)
+mesh = SubResource("CapsuleMesh_torso")
+surface_material_override/0 = SubResource("StandardMaterial3D_player")
+
+[node name="RunicBladeMarker" type="Marker3D" parent="MeshRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0.95, -0.4)
+
+[node name="CharacterStats" type="Node" parent="."]
+script = ExtResource("2_stats")
+
+[node name="PlayerStateMachine" type="Node" parent="."]
+script = ExtResource("3_fsm")
+
+[node name="MagicAbility" type="Node3D" parent="." node_paths=PackedStringArray("cast_marker")]
+script = ExtResource("4_magic")
+burst_particle_scene = ExtResource("5_burst")
+cast_marker = NodePath("../CastMarker")
+
+[node name="CastMarker" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -0.65)
+
+[node name="GroundRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+target_position = Vector3(0, -0.8, 0)
+collision_mask = 1

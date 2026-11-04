@@ -1,0 +1,55 @@
+[gd_scene load_steps=8 format=3 uid="uid://dm2x6k9y4v1r8"]
+
+[ext_resource type="Script" path="res://scripts/magic/magic_projectile.gd" id="1_proj"]
+[ext_resource type="Shader" path="res://shaders/arcane_particles.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_arcane"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/arcane_core_color = Color(0.2, 0.75, 1, 1)
+shader_parameter/arcane_outer_color = Color(0.05, 0.35, 0.95, 0.8)
+shader_parameter/pulse_speed = 3.5
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_burst"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 4.5
+initial_velocity_max = 8.5
+gravity = Vector3(0, -2.5, 0)
+scale_min = 0.2
+scale_max = 0.6
+
+[sub_resource type="QuadMesh" id="QuadMesh_particle"]
+material = SubResource("ShaderMaterial_arcane")
+size = Vector2(0.35, 0.35)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hitbox"]
+radius = 4.5
+
+[node name="ArcaneBurst" type="Node3D" node_paths=PackedStringArray("omni_light", "particles")]
+script = ExtResource("1_proj")
+omni_light = NodePath("OmniLight3D")
+particles = NodePath("GPUParticles3D")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(0.18, 0.68, 1, 1)
+light_energy = 3.5
+omni_range = 8.0
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+emitting = true
+amount = 64
+lifetime = 0.9
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_burst")
+draw_pass_1 = SubResource("QuadMesh_particle")
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_hitbox")

@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://c6f3p5t8k1m7q"]
+
+[ext_resource type="Script" path="res://scripts/camera/cinematic_camera.gd" id="1_cam"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_probe"]
+radius = 0.25
+
+[node name="CameraController" type="Node3D" node_paths=PackedStringArray("spring_arm", "camera_3d")]
+script = ExtResource("1_cam")
+spring_arm = NodePath("SpringArm3D")
+camera_3d = NodePath("SpringArm3D/Camera3D")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="."]
+shape = SubResource("SphereShape3D_probe")
+spring_length = 4.2
+margin = 0.25
+
+[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.2)
+fov = 72.0
+current = true
+near = 0.1
+far = 250.0

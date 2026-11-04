@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://ruin5x1k9a3p7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pillar"]
+size = Vector3(1.2, 5.0, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pillar"]
+size = Vector3(1.2, 5.0, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stone"]
+albedo_color = Color(0.2, 0.23, 0.28, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_arch"]
+size = Vector3(4.8, 1.0, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arch"]
+size = Vector3(4.8, 1.0, 1.2)
+
+[node name="StoneRuins" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="PillarLeftShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 2.5, 0)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarLeftMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 2.5, 0)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = SubResource("StandardMaterial3D_stone")
+
+[node name="PillarRightShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 2.5, 0)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarRightMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 2.5, 0)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = SubResource("StandardMaterial3D_stone")
+
+[node name="ArchLintelShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+shape = SubResource("BoxShape3D_arch")
+
+[node name="ArchLintelMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+mesh = SubResource("BoxMesh_arch")
+surface_material_override/0 = SubResource("StandardMaterial3D_stone")
+
+[node name="RuneOmniLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+light_color = Color(0.15, 0.65, 1, 1)
+light_energy = 1.2
+omni_range = 4.0

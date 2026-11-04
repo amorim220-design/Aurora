@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Projeto Aurora</string>
+    <string name="phase_title">Fase 1: O Despertar</string>
+    <string name="objective_title">Missão Principal</string>
+    <string name="objective_desc">Atravesse a Floresta Antiga e alcance o Altar na Clareira Misteriosa.</string>
+    <string name="stat_hp">Vida</string>
+    <string name="stat_mp">Energia Arcana</string>
+    <string name="btn_attack">Ataque</string>
+    <string name="btn_dodge">Esquiva</string>
+    <string name="btn_jump">Pulo</string>
+    <string name="btn_magic">Aurora Burst</string>
+    <string name="godot_hub_title">Projeto Godot 4 &amp; Arquitetura</string>
+</resources>

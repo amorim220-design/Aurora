@@ -1,0 +1,6 @@
+{
+  "name": "Projeto Aurora",
+  "description": "Jogo 3D de ação e aventura em fantasia sombria para Android. Fase 1: O Despertar — floresta antiga, movimentação em terceira pessoa, combate, magia arcana e controles mobile.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

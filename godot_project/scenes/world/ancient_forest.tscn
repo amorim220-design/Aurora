@@ -1,0 +1,162 @@
+[gd_scene load_steps=15 format=3 uid="uid://for3st9x1a2b7"]
+
+[ext_resource type="Script" path="res://scripts/world/ancient_forest.gd" id="1_forest"]
+[ext_resource type="PackedScene" path="res://scenes/world/props/stone_ruins.tscn" id="2_ruins"]
+[ext_resource type="PackedScene" path="res://scenes/world/props/altar_clearing.tscn" id="3_altar"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_twilight"]
+sky_top_color = Color(0.04, 0.08, 0.16, 1)
+sky_horizon_color = Color(0.12, 0.16, 0.25, 1)
+ground_bottom_color = Color(0.02, 0.03, 0.05, 1)
+ground_horizon_color = Color(0.08, 0.12, 0.18, 1)
+
+[sub_resource type="Sky" id="Sky_forest"]
+sky_material = SubResource("ProceduralSkyMaterial_twilight")
+
+[sub_resource type="Environment" id="Environment_dark_fantasy"]
+background_mode = 2
+sky = SubResource("Sky_forest")
+ambient_light_source = 3
+ambient_light_color = Color(0.15, 0.2, 0.3, 1)
+tonemap_mode = 3
+ssr_enabled = false
+ssao_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.04
+volumetric_fog_albedo = Color(0.1, 0.15, 0.25, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(120, 1, 150)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(120, 1, 150)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_forest_ground"]
+albedo_color = Color(0.08, 0.11, 0.09, 1)
+roughness = 0.95
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trunk"]
+height = 8.0
+radius = 0.7
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
+top_radius = 0.6
+bottom_radius = 0.9
+height = 8.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bark"]
+albedo_color = Color(0.16, 0.12, 0.1, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="SphereMesh_foliage"]
+radius = 2.8
+height = 4.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_foliage"]
+albedo_color = Color(0.06, 0.14, 0.09, 1)
+roughness = 0.85
+
+[node name="AncientForest" type="Node3D" node_paths=PackedStringArray("world_environment", "directional_light")]
+script = ExtResource("1_forest")
+world_environment = NodePath("WorldEnvironment")
+directional_light = NodePath("DirectionalLight3D")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_dark_fantasy")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 25, 0)
+light_color = Color(0.65, 0.78, 0.95, 1)
+light_energy = 0.9
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 2
+
+[node name="GroundCollision" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("BoxMesh_ground")
+surface_material_override/0 = SubResource("StandardMaterial3D_forest_ground")
+
+[node name="StoneRuinsEntrance" parent="." instance=ExtResource("2_ruins")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+
+[node name="StoneRuinsMidway" parent="." instance=ExtResource("2_ruins")]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, -10, 0, -38)
+
+[node name="AltarClearing" parent="." instance=ExtResource("3_altar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -65)
+
+[node name="TreeGroup" type="Node3D" parent="."]
+
+[node name="Tree1" type="StaticBody3D" parent="TreeGroup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -8)
+
+[node name="TrunkShape" type="CollisionShape3D" parent="TreeGroup/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="TrunkMesh" type="MeshInstance3D" parent="TreeGroup/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("CylinderMesh_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_bark")
+
+[node name="FoliageMesh" type="MeshInstance3D" parent="TreeGroup/Tree1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+mesh = SubResource("SphereMesh_foliage")
+surface_material_override/0 = SubResource("StandardMaterial3D_foliage")
+
+[node name="Tree2" type="StaticBody3D" parent="TreeGroup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
+
+[node name="TrunkShape" type="CollisionShape3D" parent="TreeGroup/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="TrunkMesh" type="MeshInstance3D" parent="TreeGroup/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("CylinderMesh_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_bark")
+
+[node name="FoliageMesh" type="MeshInstance3D" parent="TreeGroup/Tree2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+mesh = SubResource("SphereMesh_foliage")
+surface_material_override/0 = SubResource("StandardMaterial3D_foliage")
+
+[node name="Tree3" type="StaticBody3D" parent="TreeGroup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -25)
+
+[node name="TrunkShape" type="CollisionShape3D" parent="TreeGroup/Tree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="TrunkMesh" type="MeshInstance3D" parent="TreeGroup/Tree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("CylinderMesh_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_bark")
+
+[node name="FoliageMesh" type="MeshInstance3D" parent="TreeGroup/Tree3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+mesh = SubResource("SphereMesh_foliage")
+surface_material_override/0 = SubResource("StandardMaterial3D_foliage")
+
+[node name="Tree4" type="StaticBody3D" parent="TreeGroup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -32)
+
+[node name="TrunkShape" type="CollisionShape3D" parent="TreeGroup/Tree4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="TrunkMesh" type="MeshInstance3D" parent="TreeGroup/Tree4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+mesh = SubResource("CylinderMesh_trunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_bark")
+
+[node name="FoliageMesh" type="MeshInstance3D" parent="TreeGroup/Tree4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+mesh = SubResource("SphereMesh_foliage")
+surface_material_override/0 = SubResource("StandardMaterial3D_foliage")

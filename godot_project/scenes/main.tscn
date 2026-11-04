@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://main7x4b9a1p2"]
+
+[ext_resource type="PackedScene" path="res://scenes/world/ancient_forest.tscn" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/camera/camera_controller.tscn" id="3_camera"]
+[ext_resource type="PackedScene" path="res://scenes/ui/player_hud.tscn" id="4_hud"]
+
+[node name="Main" type="Node3D"]
+
+[node name="AncientForest" parent="." instance=ExtResource("1_world")]
+
+[node name="Player" parent="." node_paths=PackedStringArray("camera_pivot") instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+camera_pivot = NodePath("../CameraController")
+
+[node name="CameraController" parent="." node_paths=PackedStringArray("target") instance=ExtResource("3_camera")]
+target = NodePath("../Player")
+
+[node name="PlayerHUD" parent="." node_paths=PackedStringArray("player_controller", "cinematic_camera", "altar_target") instance=ExtResource("4_hud")]
+player_controller = NodePath("../Player")
+cinematic_camera = NodePath("../CameraController")
+altar_target = NodePath("../AncientForest/AltarClearing")
